@@ -1,0 +1,69 @@
+NAT Estático de Destino:
+  #
+  nat static inbound 8.8.8.8 192.168.235.7 counting
+  #
+  
+  . O IP 8.8.8.8 é o Destino real(Global)
+  . O IP 192.168.237.7 é o IP NAT de Destino(Local), chamado pelas aplicações internas.
+
+-------------------------------
+
+ NAT Estático de Origem:
+ 
+  #
+  nat static outbound 172.16.0.1 10.44.2.122 counting
+  #
+ 
+  . O IP 172.16.0.1 é o IP real(Local) da aplicação interna
+  . O IP 10.44.2.122 é IP Nateado(Global) da Aplicação interna
+ 
+-------------------------------
+
+ NAT Estático Apply:
+ 
+  . Na interface de saída, (Local->Global):
+    
+    #
+    interface GigabitEthernet0/5
+      nat static enable
+    #
+ 
+ 
+ ---------------------------------
+ NAT Dinâmico de Origem:
+ 
+ NAT POOL:
+ 
+  #
+  nat address-group 10 name NOME_DO_NAT_POOL
+   address 10.44.2.123 10.44.2.124
+  #
+
+  . O campo address é reserado para colocarmos o range de IPs para serem usados como NAT.
+ 
+ ###
+ 
+ ACL - Match Origem:
+ 
+  #
+  acl basic name nat
+   rule 10 permit source 172.16.0.0 0.0.0.255
+  #
+  
+  . ACL para dar Match nas origens;
+  
+ ###
+ 
+   NAT Dinâmico Apply:
+ 
+  . Na interface de saída, (Local->Global):
+    
+    #
+    interface GigabitEthernet0/5
+      nat static enable
+      nat outbound name nat address-group name NOME_DO-NAT_POOL counting
+     #
+
+  
+
+ 
